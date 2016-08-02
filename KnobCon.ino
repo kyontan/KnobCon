@@ -39,7 +39,6 @@ void setup() {
   }
 }
 
-volatile int state = LOW;
 volatile int last_a = 0;
 volatile int last_b = 0;
 
@@ -47,7 +46,7 @@ volatile int last_b = 0;
 volatile int rotation = 0;
 
 void loop() {
-  digitalWrite(LED, state);
+  digitalWrite(PIN_LED, 0);
 }
 
 void rotation_update(int dir) {
@@ -57,9 +56,7 @@ void rotation_update(int dir) {
 	if (enable_serial) Serial.println(rotation, DEC);
 
 	if (dir == 1) { // CW
-		state = 1;
 	} else { // CCW
-		state = 0;
 	}
 }
 
@@ -88,8 +85,6 @@ void a_change() {
 	if (last_a == current_a) { return; }
 
 	last_b = digitalRead(PIN_B);
-	int dir = 0;
-
 	if (last_a < current_a) { // rising
 		if (last_b) {
 			rotation_update(1); // CW
@@ -117,8 +112,6 @@ void b_change() {
 	if (last_b == current_b) { return; }
 
 	last_a = digitalRead(PIN_A);
-	int dir = 0;
-
 	if (last_b < current_b) { // rising
 		if (last_a) {
 			rotation_update(-1); // CCW
@@ -143,5 +136,4 @@ void switch_change() {
 	int current_sw = digitalRead(PIN_SW);
 	Joystick.setButton(0, current_sw);
 	if (enable_serial) Serial.println(current_sw);
-  // state = !state;
 }
