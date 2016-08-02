@@ -62,7 +62,7 @@ volatile int last_b = 0;
 volatile int rotation = 0;
 
 void loop() {
-  digitalWrite(PIN_LED, 0);
+  digitalWrite(PIN_LED, mode_keyboard);
 }
 
 void rotation_update(int dir) {
@@ -71,10 +71,12 @@ void rotation_update(int dir) {
 	if (enable_serial) Serial.println(rotation, DEC);
 	if (mode_joystick) Joystick.setXAxisRotation((int)rotation);
 
-	if (dir == 1) { // CW
-		Keyboard.write('>');
-	} else { // CCW
-		Keyboard.write('<');
+	if (mode_keyboard) {
+		if (dir == 1) { // CW
+			Keyboard.write('>');
+		} else { // CCW
+			Keyboard.write('<');
+		}
 	}
 }
 
