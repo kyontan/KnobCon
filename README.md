@@ -22,3 +22,8 @@
 - macOS (OSX)
   - `書類` ディレクトリ内の、 `Arduino/libraries` 内
   - `~/Documents/Arduino/libraries`
+
+## ライセンス
+
+このソフトウェアは、 MIT License です。
+詳細は LICENSE.md ファイルを参照してください。
