@@ -59,12 +59,12 @@ void rotation_update(int dir) {
 	}
 }
 
-volatile int last_update_mills = 0;
+// volatile int last_update_mills = 0;
 bool is_chattering() {
-	if ((last_update_mills - millis()) < CHATTERING_THRESHOLD_TIME_MS) {
-		return 1;
-	}
-	last_update_mills = millis();
+	// if ((last_update_mills - millis()) < CHATTERING_THRESHOLD_TIME_MS) {
+	// 	return 1;
+	// }
+	// last_update_mills = millis();
 	return 0;
 }
 
@@ -96,10 +96,10 @@ void a_change() {
 		}
 	} else { // falling
 		if (last_b) {
-			rotation_update(1); // CW
+			rotation_update(-1); // CCW
 			// Serial.println("A:F:CCW");
 		} else {
-			rotation_update(-1); // CCW
+			rotation_update(1); // CW
 			// Serial.println("A:F:CW");
 		}
 	}
