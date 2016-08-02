@@ -12,6 +12,8 @@
 //  CW: Clock-wise
 // CCW: Counter-clock-wise
 
+const bool enable_serial = false; // debug
+
 void setup() {
   pinMode(PIN_LED, OUTPUT);
 
@@ -31,8 +33,10 @@ void setup() {
 	attachInterrupt(0, b_change, CHANGE); // pin3: B
 	attachInterrupt(4, switch_change, CHANGE);  // pin7: Switch
 
-  // Serial.begin(115200);
-	Joystick.begin();
+  if (enable_serial) {
+  	Serial.begin(115200);
+  	while (!Serial);
+  }
 }
 
 volatile int state = LOW;
@@ -49,8 +53,8 @@ void loop() {
 void rotation_update(int dir) {
 	rotation += 3.75 * dir; // 360 / (24 * 4)
 	rotation = fmod(360 + rotation, 360); // (360 + rotation) % 360 => 0 <= rotation < 360
-	// Serial.println(rotation, DEC);
 	Joystick.setXAxisRotation((int)rotation);
+	if (enable_serial) Serial.println(rotation, DEC);
 
 	if (dir == 1) { // CW
 		state = 1;
@@ -89,18 +93,18 @@ void a_change() {
 	if (last_a < current_a) { // rising
 		if (last_b) {
 			rotation_update(1); // CW
-			// Serial.println("A:R:CW");
+			if (enable_serial) Serial.println("A:R:CW");
 		} else {
-			// Serial.println("A:R:CCW");
+			if (enable_serial) Serial.println("A:R:CCW");
 			rotation_update(-1); // CCW
 		}
 	} else { // falling
 		if (last_b) {
 			rotation_update(-1); // CCW
-			// Serial.println("A:F:CCW");
+			if (enable_serial) Serial.println("A:F:CCW");
 		} else {
 			rotation_update(1); // CW
-			// Serial.println("A:F:CW");
+			if (enable_serial) Serial.println("A:F:CW");
 		}
 	}
 	last_a = current_a;
@@ -118,18 +122,18 @@ void b_change() {
 	if (last_b < current_b) { // rising
 		if (last_a) {
 			rotation_update(-1); // CCW
-			// Serial.println("B:R:CCW");
+			if (enable_serial) Serial.println("B:R:CCW");
 		} else {
 			rotation_update(1); // CW
-			// Serial.println("B:R:CW");
+			if (enable_serial) Serial.println("B:R:CW");
 		}
 	} else { // falling
 		if (last_a) {
 			rotation_update(1); // CW
-			// Serial.println("B:F:CW");
+			if (enable_serial) Serial.println("B:F:CW");
 		} else {
 			rotation_update(-1); // CCW
-			// Serial.println("B:F:CCW");
+			if (enable_serial) Serial.println("B:F:CCW");
 		}
 	}
 	last_b = current_b;
@@ -137,7 +141,7 @@ void b_change() {
 
 void switch_change() {
 	int current_sw = digitalRead(PIN_SW);
-	// Serial.println(current_sw);
 	Joystick.setButton(0, current_sw);
+	if (enable_serial) Serial.println(current_sw);
   // state = !state;
 }
