@@ -4,9 +4,9 @@
 #include <Keyboard.h>
 
 #define PIN_LED 17
-#define PIN_A 2
-#define PIN_B 3
-#define PIN_SW 7
+#define PIN_A 3
+#define PIN_B 7
+#define PIN_SW 2
 
 #define CHATTERING_THRESHOLD_TIME_MS 100
 
@@ -37,9 +37,9 @@ void setup() {
 //  0  | 2
 //  1  | 3
 //  7  | 4
-	attachInterrupt(1, a_change, CHANGE); // pin2: A
-	attachInterrupt(0, b_change, CHANGE); // pin3: B
-	attachInterrupt(4, switch_change, CHANGE);  // pin7: Switch
+	attachInterrupt(0, a_change, CHANGE); // pin2: A
+	attachInterrupt(4, b_change, CHANGE); // pin3: B
+	attachInterrupt(1, switch_change, CHANGE);  // pin7: Switch
 
   if (enable_serial) {
   	Serial.begin(115200);
