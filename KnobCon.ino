@@ -73,12 +73,19 @@ void setup() {
 
 // joystick
 volatile int rotation = 0;
+volatile unsigned long last_switch_changed_at = 0;
+volatile bool last_sent_sw_state = 0;
 
 void loop() {
   digitalWrite(PIN_LED, mode_keyboard);
 }
 
 void rotation_update(int dir) {
+	if ((millis() - last_switch_changed_at) < ROTARY_ENCODER_CATTERING_THRESHOULD) {
+		Serial.println("chattering: rotary encoder");
+		return;
+	}
+
 	rotation += 3.75 * dir; // 360 / (24 * 4)
 	rotation = fmod(360 + rotation, 360); // (360 + rotation) % 360 => 0 <= rotation < 360
 	if (ENABLE_DEBUG) Serial.println(rotation, DEC);
@@ -143,7 +150,31 @@ void b_change() {
 	last_b = current_b;
 }
 
+bool is_switch_chattering() {
+	int current_sw = digitalRead(PIN_SW);
+	if (current_sw == last_sw) {
+		return true;
+	}
+	last_sw = current_sw;
+
+	int diff = millis() - last_switch_changed_at;
+	last_switch_changed_at = millis();
+	if (diff < SWITCH_CATTERING_THRESHOULD) {
+		return true;
+	}
+
+	if (last_sent_sw_state == current_sw) {
+		return true;
+	}
+
+	return false;
+}
+
 void switch_change() {
+	if (is_switch_chattering()) {
+		return;
+	}
+
 	int current_sw = digitalRead(PIN_SW);
 
 	if (ENABLE_DEBUG) {
@@ -159,4 +190,6 @@ void switch_change() {
 			Keyboard.release(KEY_RETURN);
 		}
 	}
+
+	last_sent_sw_state = current_sw;
 }
