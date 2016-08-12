@@ -106,6 +106,10 @@ void loop() {
 }
 
 void rotation_update(int dir) {
+	if (millis() < last_switch_changed_at) {
+		last_switch_changed_at = millis(); // overflow support
+	}
+
 	if ((millis() - last_switch_changed_at) < ROTARY_ENCODER_CATTERING_THRESHOULD) {
 		if (ENABLE_DEBUG) {
 			Serial.println("chattering: rotary encoder");
