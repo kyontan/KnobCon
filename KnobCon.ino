@@ -94,11 +94,15 @@ void setup() {
 }
 
 // joystick
-volatile int rotation = 0.5; // middle
+volatile int rotation = 0.5; // neutral position
 volatile unsigned long last_switch_changed_at = 0;
 volatile bool last_sent_sw_state = 0;
 
 void loop() {
+	if (mode_joystick) {
+		Joystick.setXAxisRotation(rotation);
+		delay(50);
+	}
 }
 
 void rotation_update(int dir) {
