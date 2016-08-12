@@ -21,6 +21,12 @@ const int SWITCH_CATTERING_THRESHOULD = 45; // [ms]
 // ボタン状態変化(押す/離す) から ROTARY_ENCODER_CATTERING_THRESHOULD [ms] 以内の回転を無視します
 const int ROTARY_ENCODER_CATTERING_THRESHOULD = 150; // [ms]
 
+// キーボードモードで入力される文字
+// 特殊キーの一覧: https://www.arduino.cc/en/Reference/KeyboardModifiers
+// 例: const char KEY_PUSH  = KEY_RETURN;
+const char KEY_ROTATE_LEFT  = '<';
+const char KEY_ROTATE_RIGHT = '>';
+const char KEY_PUSH  = '%';
 
 bool mode_joystick = false;
 bool mode_keyboard = false;
@@ -93,9 +99,9 @@ void rotation_update(int dir) {
 
 	if (mode_keyboard) {
 		if (dir == 1) { // CW
-			Keyboard.write('>');
+			Keyboard.write(KEY_ROTATE_RIGHT);
 		} else { // CCW
-			Keyboard.write('<');
+			Keyboard.write(KEY_ROTATE_LEFT);
 		}
 	}
 }
@@ -185,9 +191,9 @@ void switch_change() {
 	if (mode_joystick) Joystick.setButton(0, current_sw);
 	if (mode_keyboard) {
 		if (current_sw) {
-			Keyboard.press(KEY_RETURN);
+			Keyboard.press(KEY_PUSH);
 		} else {
-			Keyboard.release(KEY_RETURN);
+			Keyboard.release(KEY_PUSH);
 		}
 	}
 
