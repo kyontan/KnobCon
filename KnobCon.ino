@@ -89,6 +89,8 @@ void setup() {
 		if (mode_joystick) Joystick.begin();
 		if (mode_keyboard) Keyboard.begin();
 	}
+
+  digitalWrite(PIN_LED, mode_keyboard);
 }
 
 // joystick
@@ -97,7 +99,6 @@ volatile unsigned long last_switch_changed_at = 0;
 volatile bool last_sent_sw_state = 0;
 
 void loop() {
-  digitalWrite(PIN_LED, mode_keyboard);
 }
 
 void rotation_update(int dir) {
