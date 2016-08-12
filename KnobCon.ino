@@ -8,14 +8,22 @@
 #define PIN_B 7
 #define PIN_SW 2
 
-#define CHATTERING_THRESHOLD_TIME_MS 100
-
 //  CW: Clock-wise
 // CCW: Counter-clock-wise
 
+// true にセットするとデバッグモードになります (シリアルモニタにセンサの変更を出力します)
+// デバッグモードでは、ジョイスティック, キーボードとしては機能しません
+const bool ENABLE_DEBUG = false;
+
+// SWITCH_CATTERING_THRESHOULD [ms] 以内の連続するボタン状態変化(押す/離す)を無視します
+const int SWITCH_CATTERING_THRESHOULD = 45; // [ms]
+
+// ボタン状態変化(押す/離す) から ROTARY_ENCODER_CATTERING_THRESHOULD [ms] 以内の回転を無視します
+const int ROTARY_ENCODER_CATTERING_THRESHOULD = 150; // [ms]
+
+
 bool mode_joystick = false;
 bool mode_keyboard = false;
-const bool enable_debug = false; // set true when debugging
 
 volatile int last_a = 0;
 volatile int last_b = 0;
@@ -46,7 +54,7 @@ void setup() {
 	attachInterrupt(4, b_change, CHANGE); // pin3: B
 	attachInterrupt(1, switch_change, CHANGE);  // pin7: Switch
 
-  if (enable_debug) {
+  if (ENABLE_DEBUG) {
   	Serial.begin(115200);
   	while (!Serial);
 
@@ -73,7 +81,7 @@ void loop() {
 void rotation_update(int dir) {
 	rotation += 3.75 * dir; // 360 / (24 * 4)
 	rotation = fmod(360 + rotation, 360); // (360 + rotation) % 360 => 0 <= rotation < 360
-	if (enable_debug) Serial.println(rotation, DEC);
+	if (ENABLE_DEBUG) Serial.println(rotation, DEC);
 	if (mode_joystick) Joystick.setXAxisRotation((int)rotation);
 
 	if (mode_keyboard) {
@@ -85,27 +93,7 @@ void rotation_update(int dir) {
 	}
 }
 
-// volatile int last_update_mills = 0;
-bool is_chattering() {
-	// if ((last_update_mills - millis()) < CHATTERING_THRESHOLD_TIME_MS) {
-	// 	return 1;
-	// }
-	// last_update_mills = millis();
-	return 0;
-}
-
-// volatile int update_count = 0;
-// bool is_chattering() {
-// 	if (10 < update_count++) {
-// 		update_count = 0;
-// 		return 0;
-// 	}
-// 	return 1;
-// }
-
 void a_change() {
-	if (is_chattering()) { return; }
-
 	int current_a = digitalRead(PIN_A);
 	if (last_a == current_a) { return; }
 
@@ -113,26 +101,24 @@ void a_change() {
 	if (last_a < current_a) { // rising
 		if (last_b) {
 			rotation_update(1); // CW
-			if (enable_debug) Serial.println("A:R:CW");
+			if (ENABLE_DEBUG) Serial.println("A:R:CW");
 		} else {
-			if (enable_debug) Serial.println("A:R:CCW");
+			if (ENABLE_DEBUG) Serial.println("A:R:CCW");
 			rotation_update(-1); // CCW
 		}
 	} else { // falling
 		if (last_b) {
 			rotation_update(-1); // CCW
-			if (enable_debug) Serial.println("A:F:CCW");
+			if (ENABLE_DEBUG) Serial.println("A:F:CCW");
 		} else {
 			rotation_update(1); // CW
-			if (enable_debug) Serial.println("A:F:CW");
+			if (ENABLE_DEBUG) Serial.println("A:F:CW");
 		}
 	}
 	last_a = current_a;
 }
 
 void b_change() {
-	if (is_chattering()) { return; }
-
 	int current_b = digitalRead(PIN_B);
 	if (last_b == current_b) { return; }
 
@@ -140,18 +126,18 @@ void b_change() {
 	if (last_b < current_b) { // rising
 		if (last_a) {
 			rotation_update(-1); // CCW
-			if (enable_debug) Serial.println("B:R:CCW");
+			if (ENABLE_DEBUG) Serial.println("B:R:CCW");
 		} else {
 			rotation_update(1); // CW
-			if (enable_debug) Serial.println("B:R:CW");
+			if (ENABLE_DEBUG) Serial.println("B:R:CW");
 		}
 	} else { // falling
 		if (last_a) {
 			rotation_update(1); // CW
-			if (enable_debug) Serial.println("B:F:CW");
+			if (ENABLE_DEBUG) Serial.println("B:F:CW");
 		} else {
 			rotation_update(-1); // CCW
-			if (enable_debug) Serial.println("B:F:CCW");
+			if (ENABLE_DEBUG) Serial.println("B:F:CCW");
 		}
 	}
 	last_b = current_b;
@@ -159,7 +145,8 @@ void b_change() {
 
 void switch_change() {
 	int current_sw = digitalRead(PIN_SW);
-	if (enable_debug) {
+
+	if (ENABLE_DEBUG) {
 		Serial.print("switch_change: ");
 		Serial.println(current_sw);
 	}
