@@ -31,7 +31,7 @@ const char KEY_PUSH  = '%';
 //// ジョイスティックモードの設定
 
 // ロータリーエンコーダの回転に対して、ジョイスティックとしては回転軸をどれだけ回転したことにするか
-// 回転軸の値の範囲: -1 ~ 1
+// 回転軸の値の範囲: 0 ~ 1
 //
 // KnobCon で使用しているロータリーエンコーダは1回転すると96回、回転したことを検知します。
 // そのため、 ROTARY_ENCODER_ANGLE_PER_STEP を 1.0/96 とすると、
@@ -39,7 +39,7 @@ const char KEY_PUSH  = '%';
 const double ROTARY_ENCODER_ANGLE_PER_STEP = 1.0/96;
 
 // ROTARY_ENCODER_LOOP_MODE: true にすると、
-// 回転軸の値が -1 ~ 1 の範囲を超えた場合に、1 から -1, -1 から 1 へ値が飛ぶようになります。
+// 回転軸の値が 0 ~ 1 の範囲を超えた場合に、1 から 0, 0 から 1 へ値が飛ぶようになります。
 const bool ROTARY_ENCODER_LOOP_MODE = false;
 
 bool mode_joystick = false;
@@ -92,7 +92,7 @@ void setup() {
 }
 
 // joystick
-volatile int rotation = 0;
+volatile int rotation = 0.5; // middle
 volatile unsigned long last_switch_changed_at = 0;
 volatile bool last_sent_sw_state = 0;
 
@@ -108,20 +108,19 @@ void rotation_update(int dir) {
 
 	rotation += 360 * ROTARY_ENCODER_ANGLE_PER_STEP * dir;
 	if (ROTARY_ENCODER_LOOP_MODE) {
-		if (rotation < -360) {
-			rotation = fmod(rotation + 720, 360);
+		if (rotation < 0) {
+			rotation = fmod(rotation + 360, 360);
 		}
 
 		if (360 < rotation) {
-			rotation = fmod(rotation - 720, 360);
+			rotation = fmod(rotation - 360, 360);
 		}
 	} else {
-		rotation = constrain(rotation, -360, 360);
+		rotation = constrain(rotation, 0, 359.9);
 	}
 
-	rotation = fmod(360 + rotation, 360); // (360 + rotation) % 360 => 0 <= rotation < 360
 	if (ENABLE_DEBUG) Serial.println(rotation, DEC);
-	if (mode_joystick) Joystick.setXAxisRotation((int)rotation);
+	if (mode_joystick) Joystick.setXAxisRotation(rotation);
 
 	if (mode_keyboard) {
 		if (dir == 1) { // CW
