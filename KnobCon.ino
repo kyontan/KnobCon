@@ -15,7 +15,11 @@
 
 bool mode_joystick = false;
 bool mode_keyboard = false;
-const bool enable_serial = false; // debug
+const bool enable_debug = false; // set true when debugging
+
+volatile int last_a = 0;
+volatile int last_b = 0;
+volatile int last_sw;
 
 void setup() {
   pinMode(PIN_LED, OUTPUT);
@@ -28,8 +32,9 @@ void setup() {
 	digitalWrite(PIN_B, HIGH);
 
   // 起動時にスイッチを押していなければキーボードになる
-	mode_joystick = digitalRead(PIN_SW);
-	mode_keyboard = !mode_joystick;
+	last_sw = digitalRead(PIN_SW);
+	mode_joystick =  last_sw;
+	mode_keyboard = !last_sw;
 
 // pin | interrupt no
 //  3  | 0
@@ -41,7 +46,7 @@ void setup() {
 	attachInterrupt(4, b_change, CHANGE); // pin3: B
 	attachInterrupt(1, switch_change, CHANGE);  // pin7: Switch
 
-  if (enable_serial) {
+  if (enable_debug) {
   	Serial.begin(115200);
   	while (!Serial);
 
@@ -49,14 +54,14 @@ void setup() {
   	Serial.println(mode_joystick);
   	Serial.print("mode_keyboard: ");
   	Serial.println(mode_keyboard);
-  }
 
-	if (mode_joystick) Joystick.begin();
-	if (mode_keyboard) Keyboard.begin();
+  	mode_joystick = false;
+  	mode_keyboard = false;
+  } else {
+		if (mode_joystick) Joystick.begin();
+		if (mode_keyboard) Keyboard.begin();
+	}
 }
-
-volatile int last_a = 0;
-volatile int last_b = 0;
 
 // joystick
 volatile int rotation = 0;
@@ -68,7 +73,7 @@ void loop() {
 void rotation_update(int dir) {
 	rotation += 3.75 * dir; // 360 / (24 * 4)
 	rotation = fmod(360 + rotation, 360); // (360 + rotation) % 360 => 0 <= rotation < 360
-	if (enable_serial) Serial.println(rotation, DEC);
+	if (enable_debug) Serial.println(rotation, DEC);
 	if (mode_joystick) Joystick.setXAxisRotation((int)rotation);
 
 	if (mode_keyboard) {
@@ -108,18 +113,18 @@ void a_change() {
 	if (last_a < current_a) { // rising
 		if (last_b) {
 			rotation_update(1); // CW
-			if (enable_serial) Serial.println("A:R:CW");
+			if (enable_debug) Serial.println("A:R:CW");
 		} else {
-			if (enable_serial) Serial.println("A:R:CCW");
+			if (enable_debug) Serial.println("A:R:CCW");
 			rotation_update(-1); // CCW
 		}
 	} else { // falling
 		if (last_b) {
 			rotation_update(-1); // CCW
-			if (enable_serial) Serial.println("A:F:CCW");
+			if (enable_debug) Serial.println("A:F:CCW");
 		} else {
 			rotation_update(1); // CW
-			if (enable_serial) Serial.println("A:F:CW");
+			if (enable_debug) Serial.println("A:F:CW");
 		}
 	}
 	last_a = current_a;
@@ -135,18 +140,18 @@ void b_change() {
 	if (last_b < current_b) { // rising
 		if (last_a) {
 			rotation_update(-1); // CCW
-			if (enable_serial) Serial.println("B:R:CCW");
+			if (enable_debug) Serial.println("B:R:CCW");
 		} else {
 			rotation_update(1); // CW
-			if (enable_serial) Serial.println("B:R:CW");
+			if (enable_debug) Serial.println("B:R:CW");
 		}
 	} else { // falling
 		if (last_a) {
 			rotation_update(1); // CW
-			if (enable_serial) Serial.println("B:F:CW");
+			if (enable_debug) Serial.println("B:F:CW");
 		} else {
 			rotation_update(-1); // CCW
-			if (enable_serial) Serial.println("B:F:CCW");
+			if (enable_debug) Serial.println("B:F:CCW");
 		}
 	}
 	last_b = current_b;
@@ -154,7 +159,11 @@ void b_change() {
 
 void switch_change() {
 	int current_sw = digitalRead(PIN_SW);
-	if (enable_serial) Serial.println(current_sw);
+	if (enable_debug) {
+		Serial.print("switch_change: ");
+		Serial.println(current_sw);
+	}
+
 	if (mode_joystick) Joystick.setButton(0, current_sw);
 	if (mode_keyboard) {
 		if (current_sw) {
