@@ -1,4 +1,6 @@
+#ifndef USBCON
 #define USBCON
+#endif
 
 #include <Joystick.h>
 #include <Keyboard.h>
