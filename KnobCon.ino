@@ -209,6 +209,8 @@ bool is_switch_chattering() {
 		return true;
 	}
 
+	last_sent_sw_state = current_sw;
+
 	return false;
 }
 
@@ -217,7 +219,7 @@ void switch_change() {
 		return;
 	}
 
-	int current_sw = digitalRead(PIN_SW);
+	int current_sw = last_sent_sw_state;
 
 	if (ENABLE_DEBUG) {
 		Serial.print("switch_change: ");
