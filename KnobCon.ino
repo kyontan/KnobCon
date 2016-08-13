@@ -24,8 +24,8 @@ const int ROTARY_ENCODER_CATTERING_THRESHOULD = 150; // [ms]
 // キーボードモードで入力される文字
 // 特殊キーの一覧: https://www.arduino.cc/en/Reference/KeyboardModifiers
 // 例: const char KEY_PUSH  = KEY_RETURN;
-const char KEY_ROTATE_LEFT  = '<';
-const char KEY_ROTATE_RIGHT = '>';
+const char KEY_ROTATE_LEFT  = '[';
+const char KEY_ROTATE_RIGHT = ']';
 const char KEY_PUSH  = '%';
 
 //// ジョイスティックモードの設定
