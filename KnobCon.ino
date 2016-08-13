@@ -59,11 +59,6 @@ void setup() {
 	digitalWrite(PIN_A, HIGH);
 	digitalWrite(PIN_B, HIGH);
 
-  // 起動時にスイッチを押していなければキーボードになる
-	last_sw = digitalRead(PIN_SW);
-	mode_joystick =  last_sw;
-	mode_keyboard = !last_sw;
-
 // pin | interrupt no
 //  3  | 0
 //  2  | 1
@@ -86,6 +81,11 @@ void setup() {
   	mode_joystick = false;
   	mode_keyboard = false;
   } else {
+	  // 起動時にスイッチを押していなければキーボードになる
+		last_sw = digitalRead(PIN_SW);
+		mode_joystick =  last_sw;
+		mode_keyboard = !last_sw;
+
 		if (mode_joystick) Joystick.begin();
 		if (mode_keyboard) Keyboard.begin();
 	}
