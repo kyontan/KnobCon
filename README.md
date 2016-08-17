@@ -4,7 +4,9 @@
 
 ## 3Dモデル, 回路図等
 
-[KnobCon 公式サイト](http://tofu-ya.moe/knobcon) にて配布しています
+[KnobCon 公式サイト](http://tofu-ya.moe/knobcon) にて近日中に配布予定です。
+
+3Dモデルについては、 http://www.thingiverse.com/thing:1724123 にて公開しています。
 
 ## 使用ライブラリ
 
