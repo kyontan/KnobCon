@@ -17,11 +17,11 @@
 // デバッグモードでは、ジョイスティック, キーボードとしては機能しません
 const bool ENABLE_DEBUG = false;
 
-// SWITCH_CATTERING_THRESHOULD [ms] 以内の連続するボタン状態変化(押す/離す)を無視します
-const int SWITCH_CATTERING_THRESHOULD = 45; // [ms]
+// SWITCH_CHATTERING_THRESHOULD [ms] 以内の連続するボタン状態変化(押す/離す)を無視します
+const int SWITCH_CHATTERING_THRESHOULD = 45; // [ms]
 
-// ボタン状態変化(押す/離す) から ROTARY_ENCODER_CATTERING_THRESHOULD [ms] 以内の回転を無視します
-const int ROTARY_ENCODER_CATTERING_THRESHOULD = 150; // [ms]
+// ボタン状態変化(押す/離す) から ROTARY_ENCODER_CHATTERING_THRESHOULD [ms] 以内の回転を無視します
+const int ROTARY_ENCODER_CHATTERING_THRESHOULD = 150; // [ms]
 
 // キーボードモードで入力される文字
 // 特殊キーの一覧: https://www.arduino.cc/en/Reference/KeyboardModifiers
@@ -112,7 +112,7 @@ void rotation_update(int dir) {
 		last_switch_changed_at = millis(); // overflow support
 	}
 
-	if ((millis() - last_switch_changed_at) < ROTARY_ENCODER_CATTERING_THRESHOULD) {
+	if ((millis() - last_switch_changed_at) < ROTARY_ENCODER_CHATTERING_THRESHOULD) {
 		if (ENABLE_DEBUG) {
 			Serial.println("chattering: rotary encoder");
 		}
@@ -203,7 +203,7 @@ bool is_switch_chattering() {
 
 	int diff = millis() - last_switch_changed_at;
 	last_switch_changed_at = millis();
-	if (diff < SWITCH_CATTERING_THRESHOULD) {
+	if (diff < SWITCH_CHATTERING_THRESHOULD) {
 		return true;
 	}
 
