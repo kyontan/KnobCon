@@ -1,12 +1,11 @@
 # About
 
-[豆腐屋](http://tofu-ya.moe/) が製作したノブ型コントローラー KnobCon の制御ソフトウェアです
+[豆腐屋](http://tofu-ya.moe/) が 2016年夏のコミックマーケット89 にて頒布したノブ型コントローラー KnobCon の制御ソフトウェアです。
 
 ## 3Dモデル, 回路図等
 
-[KnobCon 公式サイト](http://tofu-ya.comike.moe) にて近日中に配布予定です。
-
 3Dモデルについては、 http://www.thingiverse.com/thing:1724123 にて公開しています。
+回路図については近日公開予定です。
 
 ## 使用ライブラリ
 
